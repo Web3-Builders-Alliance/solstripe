@@ -15,6 +15,17 @@ interface TokenPrice {
   current_price: number;
 }
 
+// in memeory store for token data
+interface TokenData {
+  price: number;
+  sentiment: string;
+  mintAddress: string;
+  symbol: string;
+}
+
+// token data store
+export const tokenDataStore: { [key: string]: TokenData } = {};
+
 export const SOLANA_TOKENS = [
   "solana",
   "bonk",
@@ -44,6 +55,10 @@ io.on("connection", (socket) => {
     console.log("user disconnected");
   });
 });
+
+setInterval(() => {
+  walletControllers.updateTokenData(SOLANA_TOKENS, io);
+}, 30000);
 
 server.listen(3000, () => {
   console.log("server running at http://localhost:3000");
