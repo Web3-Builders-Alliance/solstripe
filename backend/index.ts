@@ -1,17 +1,13 @@
-// src/server.ts
 import express from "express";
-import cors from "cors";
-import dotenv from "dotenv";
-import axios from "axios";
-
-dotenv.config();
+import { createServer } from "node:http";
+import { fileURLToPath } from "node:url";
+import { dirname, join } from "node:path";
+import { Server } from "socket.io";
+import { walletControllers } from "./controllers/walletControllers";
 
 const app = express();
-const port = process.env.PORT || 3001;
-
-app.use(cors());
-app.use(express.json());
-
+const server = createServer(app);
+const io = new Server(server);
 interface TokenPrice {
   id: string;
   symbol: string;
@@ -19,7 +15,7 @@ interface TokenPrice {
   current_price: number;
 }
 
-const SOLANA_TOKENS = [
+export const SOLANA_TOKENS = [
   "solana",
   "bonk",
   "raydium",
@@ -28,30 +24,27 @@ const SOLANA_TOKENS = [
   "orca",
 ];
 
-app.get("/api/token-prices", async (req, res) => {
-  try {
-    const response = await axios.get(
-      `${process.env.COINGECKO_API_URL}/coins/markets`,
-      {
-        params: {
-          vs_currency: "usd",
-          ids: SOLANA_TOKENS.join(","),
-          order: "market_cap_desc",
-          per_page: 100,
-          page: 1,
-          sparkline: false,
-        },
-      }
-    );
-
-    const tokenPrices: TokenPrice[] = response.data;
-    res.json(tokenPrices);
-  } catch (error) {
-    console.error("Error fetching token prices:", error);
-    res.status(500).json({ error: "Failed to fetch token prices" });
-  }
+app.get("/", (req, res) => {
+  res.json({ msg: "hi user" });
 });
 
-app.listen(port, () => {
-  console.log(`Server running on port ${port}`);
+io.on("connection", (socket) => {
+  console.log("a user connected");
+  socket.on("walletconnected", (data) => {
+    console.log(data, "wallet connected");
+  });
+
+  socket.on("joinTokenRoom", ({ tokens }) => {
+    console.log("joining room", tokens);
+    socket.join(tokens);
+    walletControllers.emitTokenProces({ socket, tokens });
+  });
+
+  socket.on("disconnect", () => {
+    console.log("user disconnected");
+  });
+});
+
+server.listen(3000, () => {
+  console.log("server running at http://localhost:3000");
 });
