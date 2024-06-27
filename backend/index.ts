@@ -4,6 +4,7 @@ import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { Server } from "socket.io";
 import { walletControllers } from "./controllers/walletControllers";
+import { newsControllers } from "./controllers/newsControllers";
 
 const app = express();
 const server = createServer(app);
@@ -28,11 +29,13 @@ export const tokenDataStore: { [key: string]: TokenData } = {};
 
 export const SOLANA_TOKENS = [
   "solana",
-  "bonk",
+  "$BONK",
   "raydium",
   "serum",
   "samoyedcoin",
   "orca",
+  "shiba-inu",
+  "pyth-network",
 ];
 
 app.get("/", (req, res) => {
@@ -41,6 +44,7 @@ app.get("/", (req, res) => {
 
 io.on("connection", (socket) => {
   console.log("a user connected");
+  // socket.join(SOLANA_TOKENS);
   socket.on("walletconnected", (data) => {
     console.log(data, "wallet connected");
   });
@@ -48,7 +52,11 @@ io.on("connection", (socket) => {
   socket.on("joinTokenRoom", ({ tokens }) => {
     console.log("joining room", tokens);
     socket.join(tokens);
-    walletControllers.emitTokenProces({ socket, tokens });
+    // walletControllers.emitTokenProces({ socket, tokens });
+    newsControllers.getNews({ coinName: tokens[0] });
+    // tokens.forEach((token: string) => {
+    //   newsControllers.getNews({ coinName: token });
+    // });
   });
 
   socket.on("disconnect", () => {
@@ -56,9 +64,9 @@ io.on("connection", (socket) => {
   });
 });
 
-setInterval(() => {
-  walletControllers.updateTokenData(SOLANA_TOKENS, io);
-}, 30000);
+// setInterval(() => {
+//   walletControllers.updateTokenData(SOLANA_TOKENS, io);
+// }, 30000);
 
 server.listen(3000, () => {
   console.log("server running at http://localhost:3000");
