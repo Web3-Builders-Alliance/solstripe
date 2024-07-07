@@ -4,7 +4,7 @@ import { Server } from "socket.io";
 // import { walletControllers } from "./controllers/walletControllers";
 import { newsControllers } from "./controllers/newsControllers";
 import axios from "axios";
-
+require("dotenv").config();
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server);
@@ -46,7 +46,7 @@ async function fetchSolanaTokenData() {
       {
         headers: {
           accept: "application/json",
-          "x-cg-demo-api-key": "CG-9WfUBWzRZM1urg6sW3b96amF",
+          "x-cg-demo-api-key": `${process.env.COIN_GECKO_API}`,
         },
       }
     );

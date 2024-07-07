@@ -2,7 +2,7 @@ import axios from "axios";
 import Sentiment from "sentiment";
 const sentiment = new Sentiment();
 
-const API_KEY = process.env.NEWS_API_KEY || "0e94b524b0ac4d22aa3f3fdbe03567b7";
+const API_KEY = process.env.NEW_API;
 
 interface News {
   source: {
@@ -74,7 +74,7 @@ export const newsControllers = {
       console.log(url);
 
       const response = await axios.get(
-        `https://newsdata.io/api/1/news?apikey=pub_480938616eb5857dc75c02a1a1df605e0dd51&q=${coinName}`
+        `https://newsdata.io/api/1/news?apikey=${API_KEY}&q=${coinName}`
       );
       console.log(today, API_KEY, coinName);
 
