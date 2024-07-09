@@ -1,48 +1,25 @@
-// import { useState } from "react";
-
-import { BrowserRouter, Route, Routes } from "react-router-dom";
-import Home from "./pages/Home";
-
-// function App() {
-//   const [count, setCount] = useState(0);
-
-//   return (
-//     <>
-//       <BrowserRouter>
-//         <Routes>
-//           <Route path="/" element={<Home />} />
-//         </Routes>
-//       </BrowserRouter>
-//     </>
-//   );
-// }
-
-// export default App;
 import React, { useMemo } from "react";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 import {
   ConnectionProvider,
   WalletProvider,
 } from "@solana/wallet-adapter-react";
 import { WalletAdapterNetwork } from "@solana/wallet-adapter-base";
 import { PhantomWalletAdapter } from "@solana/wallet-adapter-wallets";
-import {
-  WalletModalProvider,
-  WalletDisconnectButton,
-  WalletMultiButton,
-} from "@solana/wallet-adapter-react-ui";
+import { WalletModalProvider } from "@solana/wallet-adapter-react-ui";
 import { clusterApiUrl } from "@solana/web3.js";
-
-// Default styles that can be overridden by your app
 import "@solana/wallet-adapter-react-ui/styles.css";
+
 import { SocketProvider } from "./context/SocketContext";
+import Header from './components/Header';
+import Hero from './components/Hero';
+import Features from './components/Features';
+import Pricing from './components/Pricing';
+import Footer from './components/Footer';
 
 function App() {
-  // The network can be set to 'devnet', 'testnet', or 'mainnet-beta'
   const network = WalletAdapterNetwork.Devnet;
-
-  // You can also provide a custom RPC endpoint
   const endpoint = useMemo(() => clusterApiUrl(network), [network]);
-
   const wallets = useMemo(() => [new PhantomWalletAdapter()], []);
 
   return (
@@ -50,12 +27,22 @@ function App() {
       <ConnectionProvider endpoint={endpoint}>
         <WalletProvider wallets={wallets} autoConnect>
           <WalletModalProvider>
-            <WalletMultiButton />
-            <WalletDisconnectButton />
             <BrowserRouter>
-              <Routes>
-                <Route path="/" element={<Home />} />
-              </Routes>
+              <div className="min-h-screen flex flex-col">
+                <Header />
+                <main className="flex-grow">
+                  <Routes>
+                    <Route path="/" element={
+                      <>
+                        <Hero />
+                        <Features />
+                        <Pricing />
+                      </>
+                    } />
+                  </Routes>
+                </main>
+                <Footer />
+              </div>
             </BrowserRouter>
           </WalletModalProvider>
         </WalletProvider>

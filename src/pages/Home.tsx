@@ -6,23 +6,26 @@ import { useTokenAccounts } from "../utils/TokenAccounts";
 
 const Home = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const wallet = useWallet();
-  let pubkey = wallet.publicKey?.toString();
-  console.log(wallet.publicKey?.toString(), "this is wallet");
+  const { publicKey } = useWallet();
+  const pubkey = publicKey?.toString();
   const { tokens, loading, error } = useTokenAccounts();
+
+  const handleFetchBalance = () => {
+    if (pubkey) {
+      dispatch(fetchBalance({ publicKey: pubkey }));
+      console.log(pubkey, "this is pubkey");
+    }
+  };
 
   return (
     <>
-      <div className=" btn btn-primary">
-        <button
-          onClick={(e) => {
-            dispatch(fetchBalance({ publicKey: pubkey }));
-            console.log(pubkey, "this is pubkey");
-          }}
-        >
-          asdfasf
+      <div className="btn btn-primary">
+        <button onClick={handleFetchBalance}>
+          Fetch Balance
         </button>
       </div>
+      {loading && <p>Loading...</p>}
+      {error && <p>Error: {error}</p>}
       <ul>
         {tokens.map((token) => (
           <li key={token.mint}>
