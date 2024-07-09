@@ -34,6 +34,7 @@ import { clusterApiUrl } from "@solana/web3.js";
 
 // Default styles that can be overridden by your app
 import "@solana/wallet-adapter-react-ui/styles.css";
+import { SocketProvider } from "./context/SocketContext";
 
 function App() {
   // The network can be set to 'devnet', 'testnet', or 'mainnet-beta'
@@ -45,20 +46,21 @@ function App() {
   const wallets = useMemo(() => [new PhantomWalletAdapter()], []);
 
   return (
-    <ConnectionProvider endpoint={endpoint}>
-      <WalletProvider wallets={wallets} autoConnect>
-        <WalletModalProvider>
-          <WalletMultiButton />
-          <WalletDisconnectButton />
-          <BrowserRouter>
-            <Routes>
-              <Route path="/" element={<Home />} />
-            </Routes>
-          </BrowserRouter>
-          {/* Your app's components go here, nested within the context providers. */}
-        </WalletModalProvider>
-      </WalletProvider>
-    </ConnectionProvider>
+    <SocketProvider>
+      <ConnectionProvider endpoint={endpoint}>
+        <WalletProvider wallets={wallets} autoConnect>
+          <WalletModalProvider>
+            <WalletMultiButton />
+            <WalletDisconnectButton />
+            <BrowserRouter>
+              <Routes>
+                <Route path="/" element={<Home />} />
+              </Routes>
+            </BrowserRouter>
+          </WalletModalProvider>
+        </WalletProvider>
+      </ConnectionProvider>
+    </SocketProvider>
   );
 }
 
